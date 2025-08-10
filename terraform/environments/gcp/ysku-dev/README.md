@@ -21,12 +21,12 @@ This Terraform configuration sets up the development environment for the ysku pr
 ### Compute Engine Instance
 - **Instance Name**: `voice-assistant-1`
 - **Machine Type**: `e2-micro` (configurable via `machine_type` variable)
-- **OS Image**: Ubuntu 22.04 LTS
+- **OS Image**: Ubuntu 24.04 LTS
 - **Disk**: 10GB standard persistent disk
 - **Network**: Attached to the VPC with ephemeral public IP address
 - **Public Access**: External IP address assigned for internet access
 - **Tags**: `ssh-allowed`, `web-server`, `webrtc-server`, `turn-server`, `twilio-webrtc`
-- **Startup Script**: Installs and starts Nginx automatically
+- **Startup Script**: Installs Docker Engine, Docker Compose, Nginx, and Certbot automatically
 
 ## Required Variables
 
@@ -67,3 +67,11 @@ To get the external IP address:
 ```bash
 gcloud compute instances describe voice-assistant-1 --zone=asia-northeast1-a --format="get(networkInterfaces[0].accessConfigs[0].natIP)"
 ```
+
+### SSL Certificate Setup
+Certbot is pre-installed for SSL certificate management. To obtain a certificate:
+```bash
+sudo certbot --nginx -d your-domain.com
+```
+
+For automatic renewal, certbot creates a systemd timer by default.

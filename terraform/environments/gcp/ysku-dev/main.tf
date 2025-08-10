@@ -122,7 +122,7 @@ resource "google_compute_instance" "voice_assistant_instance_1" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      image = "ubuntu-os-cloud/ubuntu-2404-lts"
       size  = 10
       type  = "pd-standard"
     }
@@ -144,10 +144,50 @@ resource "google_compute_instance" "voice_assistant_instance_1" {
 
   metadata_startup_script = <<-EOF
     #!/bin/bash
+    # Update package index
     apt-get update
+
+    # Install prerequisites
+    apt-get install -y \
+        ca-certificates \
+        curl \
+        gnupg \
+        lsb-release
+
+    # Add Docker's official GPG key
+    mkdir -p /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+    # Add Docker repository
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    # Update package index with Docker repo
+    apt-get update
+
+    # Install Docker Engine
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+    # Start and enable Docker service
+    systemctl start docker
+    systemctl enable docker
+
+    # Add ubuntu user to docker group
+    usermod -aG docker ubuntu
+
+    # Install nginx for web server (optional)
     apt-get install -y nginx
     systemctl start nginx
     systemctl enable nginx
+    
+    # Install certbot for SSL certificates
+    apt-get install -y snapd
+    snap install core; snap refresh core
+    snap install --classic certbot
+    
+    # Create symlink for certbot command
+    ln -s /snap/bin/certbot /usr/bin/certbot
   EOF
 
   service_account {
