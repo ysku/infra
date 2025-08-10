@@ -23,8 +23,8 @@ This Terraform configuration sets up the development environment for the ysku pr
 - **Machine Type**: `e2-micro` (configurable via `machine_type` variable)
 - **OS Image**: Ubuntu 24.04 LTS
 - **Disk**: 10GB standard persistent disk
-- **Network**: Attached to the VPC with ephemeral public IP address
-- **Public Access**: External IP address assigned for internet access
+- **Network**: Attached to the VPC with static public IP address
+- **Public Access**: Static external IP address assigned for internet access
 - **Tags**: `ssh-allowed`, `web-server`, `webrtc-server`, `turn-server`, `twilio-webrtc`
 - **Startup Script**: Installs Docker Engine, Docker Compose, Nginx, and Certbot automatically
 
@@ -59,13 +59,18 @@ gcloud compute ssh voice-assistant-1 --zone=asia-northeast1-a
 ```
 
 ### Web Access
-The instance has a public IP address and runs Nginx. You can access it via:
-- **HTTP**: `http://<external-ip>`
-- **HTTPS**: `https://<external-ip>` (if SSL is configured)
+The instance has a static public IP address and runs Nginx. You can access it via:
+- **HTTP**: `http://<static-external-ip>`
+- **HTTPS**: `https://<static-external-ip>` (if SSL is configured)
 
-To get the external IP address:
+To get the static external IP address:
 ```bash
-gcloud compute instances describe voice-assistant-1 --zone=asia-northeast1-a --format="get(networkInterfaces[0].accessConfigs[0].natIP)"
+terraform output voice_assistant_external_ip
+```
+
+Or using gcloud:
+```bash
+gcloud compute addresses describe voice-assistant-static-ip --region=asia-northeast1 --format="get(address)"
 ```
 
 ### SSL Certificate Setup

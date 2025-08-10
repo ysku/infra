@@ -113,6 +113,13 @@ resource "google_compute_firewall" "voice_assistant_allow_twilio" {
   target_tags   = ["twilio-webrtc"]
 }
 
+# Static external IP address
+resource "google_compute_address" "voice_assistant_static_ip" {
+  project = var.project_id
+  name    = "voice-assistant-static-ip"
+  region  = var.region
+}
+
 # Compute Engine Instance
 resource "google_compute_instance" "voice_assistant_instance_1" {
   project      = var.project_id
@@ -122,7 +129,7 @@ resource "google_compute_instance" "voice_assistant_instance_1" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-2404-lts"
+      image = "ubuntu-os-cloud/ubuntu-2404-lts-amd64"
       size  = 10
       type  = "pd-standard"
     }
@@ -133,7 +140,8 @@ resource "google_compute_instance" "voice_assistant_instance_1" {
     subnetwork = google_compute_subnetwork.voice_assistant_subnet_1.id
 
     access_config {
-      // Ephemeral public IP for external access
+      // Static public IP for external access
+      nat_ip       = google_compute_address.voice_assistant_static_ip.address
       network_tier = "PREMIUM"
     }
   }
@@ -142,6 +150,7 @@ resource "google_compute_instance" "voice_assistant_instance_1" {
 
   metadata = {}
 
+  # check logs by tail -f /var/log/syslog
   metadata_startup_script = <<-EOF
     #!/bin/bash
     # Update package index
@@ -180,12 +189,12 @@ resource "google_compute_instance" "voice_assistant_instance_1" {
     apt-get install -y nginx
     systemctl start nginx
     systemctl enable nginx
-    
+
     # Install certbot for SSL certificates
     apt-get install -y snapd
     snap install core; snap refresh core
     snap install --classic certbot
-    
+
     # Create symlink for certbot command
     ln -s /snap/bin/certbot /usr/bin/certbot
   EOF
@@ -195,10 +204,10 @@ resource "google_compute_instance" "voice_assistant_instance_1" {
   }
 }
 
-# Output the external IP address
+# Output the static external IP address
 output "voice_assistant_external_ip" {
-  description = "External IP address of the voice assistant instance"
-  value       = google_compute_instance.voice_assistant_instance_1.network_interface[0].access_config[0].nat_ip
+  description = "Static external IP address of the voice assistant instance"
+  value       = google_compute_address.voice_assistant_static_ip.address
 }
 
 output "voice_assistant_internal_ip" {
