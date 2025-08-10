@@ -58,6 +58,61 @@ resource "google_compute_firewall" "voice_assistant_allow_http_https" {
   target_tags   = ["web-server"]
 }
 
+# Firewall rule for WebSocket + WebRTC
+resource "google_compute_firewall" "voice_assistant_allow_webrtc" {
+  project = var.project_id
+  name    = "voice-assistant-allow-webrtc"
+  network = google_compute_network.voice_assistant_network.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["8000"]
+  }
+
+  allow {
+    protocol = "udp"
+    ports    = ["10000-20000"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["webrtc-server"]
+}
+
+# Firewall rule for TURN server
+resource "google_compute_firewall" "voice_assistant_allow_turn" {
+  project = var.project_id
+  name    = "voice-assistant-allow-turn"
+  network = google_compute_network.voice_assistant_network.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["3478", "5349"]
+  }
+
+  allow {
+    protocol = "udp"
+    ports    = ["3478", "49152-65535"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["turn-server"]
+}
+
+# Firewall rule for Twilio WebRTC
+resource "google_compute_firewall" "voice_assistant_allow_twilio" {
+  project = var.project_id
+  name    = "voice-assistant-allow-twilio"
+  network = google_compute_network.voice_assistant_network.name
+
+  allow {
+    protocol = "udp"
+    ports    = ["3478", "10000-60000"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["twilio-webrtc"]
+}
+
 # Compute Engine Instance
 resource "google_compute_instance" "voice_assistant_instance_1" {
   project      = var.project_id
@@ -83,7 +138,7 @@ resource "google_compute_instance" "voice_assistant_instance_1" {
     }
   }
 
-  tags = ["ssh-allowed", "web-server"]
+  tags = ["ssh-allowed", "web-server", "webrtc-server", "turn-server", "twilio-webrtc"]
 
   metadata = {}
 

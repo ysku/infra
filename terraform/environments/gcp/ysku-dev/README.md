@@ -14,6 +14,9 @@ This Terraform configuration sets up the development environment for the ysku pr
 ### Firewall Rules
 - **SSH Access**: Port 22 open to `0.0.0.0/0` for instances with `ssh-allowed` tag
 - **HTTP/HTTPS**: Ports 80, 443 open to `0.0.0.0/0` for instances with `web-server` tag
+- **WebRTC**: TCP 8000, UDP 10000-20000 for instances with `webrtc-server` tag
+- **TURN Server**: TCP 3478,5349, UDP 3478,49152-65535 for instances with `turn-server` tag
+- **Twilio WebRTC**: UDP 3478,10000-60000 for instances with `twilio-webrtc` tag
 
 ### Compute Engine Instance
 - **Instance Name**: `voice-assistant-1`
@@ -22,7 +25,7 @@ This Terraform configuration sets up the development environment for the ysku pr
 - **Disk**: 10GB standard persistent disk
 - **Network**: Attached to the VPC with ephemeral public IP address
 - **Public Access**: External IP address assigned for internet access
-- **Tags**: `ssh-allowed`, `web-server`
+- **Tags**: `ssh-allowed`, `web-server`, `webrtc-server`, `turn-server`, `twilio-webrtc`
 - **Startup Script**: Installs and starts Nginx automatically
 
 ## Required Variables
