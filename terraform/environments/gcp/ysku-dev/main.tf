@@ -109,6 +109,11 @@ resource "google_compute_firewall" "voice_assistant_allow_twilio" {
     ports    = ["3478", "10000-60000"]
   }
 
+  allow {
+    protocol = "tcp"
+    ports    = ["3478", "5349"]
+  }
+
   source_ranges = ["0.0.0.0/0"]
   target_tags   = ["twilio-webrtc"]
 }
