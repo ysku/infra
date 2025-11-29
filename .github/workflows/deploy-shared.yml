@@ -112,12 +112,14 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply
+        id: apply
         if: |
           (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply') ||
           (github.event_name == 'push' && github.ref == 'refs/heads/main')
         run: terraform apply -auto-approve tfplan
 
       - name: Terraform Destroy
+        id: destroy
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'destroy'
         run: terraform destroy -auto-approve
 
@@ -133,3 +135,9 @@ jobs:
           echo "- **Init**: \`${{ steps.init.outcome }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Validate**: \`${{ steps.validate.outcome }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Plan**: \`${{ steps.plan.outcome }}\`" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ steps.apply.outcome }}" != "" ]]; then
+            echo "- **Apply**: \`${{ steps.apply.outcome }}\`" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [[ "${{ steps.destroy.outcome }}" != "" ]]; then
+            echo "- **Destroy**: \`${{ steps.destroy.outcome }}\`" >> $GITHUB_STEP_SUMMARY
+          fi
