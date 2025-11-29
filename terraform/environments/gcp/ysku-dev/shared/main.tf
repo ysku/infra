@@ -87,9 +87,9 @@ resource "google_compute_firewall" "allow_internal" {
   }
 
   source_ranges = [
-    "10.0.0.0/20",   # Primary subnet
-    "10.16.0.0/12",  # GKE pods
-    "10.32.0.0/16",  # GKE services
+    "10.0.0.0/20",  # Primary subnet
+    "10.16.0.0/12", # GKE pods
+    "10.32.0.0/16", # GKE services
   ]
 
   description = "Allow internal communication within VPC"
