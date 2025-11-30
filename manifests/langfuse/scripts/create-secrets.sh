@@ -7,13 +7,13 @@ echo "Generating secrets for Langfuse..."
 echo ""
 
 # Generate random passwords
-POSTGRES_PASSWORD=$(openssl rand -base64 32)
-REDIS_PASSWORD=$(openssl rand -base64 32)
-CLICKHOUSE_PASSWORD=$(openssl rand -base64 32)
-NEXTAUTH_SECRET=$(openssl rand -base64 32)
-NEXTAUTH_SECRET_DEDICATED=$(openssl rand -base64 32)
+POSTGRES_PASSWORD=$(openssl rand -hex 32)
+REDIS_PASSWORD=$(openssl rand -hex 32)
+CLICKHOUSE_PASSWORD=$(openssl rand -hex 32)
+NEXTAUTH_SECRET=$(openssl rand -hex 32)
+NEXTAUTH_SECRET_DEDICATED=$(openssl rand -hex 32)
 SALT=$(openssl rand -base64 32)
-ENCRYPTION_KEY=$(openssl rand -base64 32)
+ENCRYPTION_KEY=$(openssl rand -hex 32)
 
 echo "Creating namespace if not exists..."
 kubectl create namespace ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
@@ -25,7 +25,6 @@ echo "Creating secrets..."
 kubectl create secret generic langfuse-postgresql-auth \
   --namespace=${NAMESPACE} \
   --from-literal=password="${POSTGRES_PASSWORD}" \
-  --from-literal=postgres-password="${POSTGRES_PASSWORD}" \
   --dry-run=client -o yaml | kubectl apply -f -
 
 echo "✓ Created langfuse-postgresql-auth"

@@ -1,5 +1,4 @@
-# Langfuse Helm values for GKE deployment
-# Optimized for e2-medium nodes (2 vCPU, 4GB memory)
+# Langfuse Helm values for GKE Autopilot deployment
 
 langfuse:
   salt:
@@ -17,7 +16,6 @@ langfuse:
         key: nextauth-secret
 
 clickhouse:
-  # Reduce replicas to 1 for resource-constrained environments
   replicaCount: 1
   shards: 1
 
@@ -29,23 +27,24 @@ clickhouse:
     limits:
       cpu: 1000m
       memory: 2Gi
-      ephemeral-storage: 2Gi
+      ephemeral-storage: 1Gi
     requests:
       cpu: 500m
       memory: 1Gi
-      ephemeral-storage: 50Mi
+      ephemeral-storage: 1Gi
 
 zookeeper:
-  # Reduce replicas to 1 for resource-constrained environments
   replicaCount: 1
 
   resources:
     limits:
       cpu: 500m
       memory: 1Gi
+      ephemeral-storage: 1Gi
     requests:
       cpu: 250m
       memory: 512Mi
+      ephemeral-storage: 1Gi
 
 postgresql:
   auth:
@@ -58,9 +57,11 @@ postgresql:
       limits:
         cpu: 500m
         memory: 1Gi
+        ephemeral-storage: 1Gi
       requests:
         cpu: 250m
         memory: 512Mi
+        ephemeral-storage: 1Gi
 
 redis:
   auth:
@@ -71,9 +72,11 @@ redis:
       limits:
         cpu: 500m
         memory: 512Mi
+        ephemeral-storage: 1Gi
       requests:
         cpu: 100m
         memory: 256Mi
+        ephemeral-storage: 1Gi
 
 # Langfuse web application
 web:
@@ -81,9 +84,11 @@ web:
     limits:
       cpu: 500m
       memory: 1Gi
+      ephemeral-storage: 1Gi
     requests:
       cpu: 250m
       memory: 512Mi
+      ephemeral-storage: 1Gi
 
 # Langfuse worker
 worker:
@@ -91,6 +96,8 @@ worker:
     limits:
       cpu: 500m
       memory: 1Gi
+      ephemeral-storage: 1Gi
     requests:
       cpu: 250m
       memory: 512Mi
+      ephemeral-storage: 1Gi

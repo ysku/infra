@@ -405,7 +405,7 @@ data:
       </logger>
       <!-- Zookeeper configuration -->
       <zookeeper>
-        
+
         <node>
           <host from_env="KEEPER_NODE_0"></host>
           <port>2181</port>
@@ -993,11 +993,11 @@ spec:
       annotations:
         checksum/credentials-secret: 38c9f6da3534dcda6ff5d4f1226bd19a18155a62661575c61de6e84e18f0c4b9
     spec:
-      
+
       serviceAccountName: langfuse-s3
       affinity:
         podAffinity:
-          
+
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - podAffinityTerm:
@@ -1008,7 +1008,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
               weight: 1
         nodeAffinity:
-          
+
       automountServiceAccountToken: false
       securityContext:
         fsGroup: 1001
@@ -1194,7 +1194,7 @@ spec:
               value: "postgres_langfuse"
             - name: LANGFUSE_AUTO_POSTGRES_MIGRATION_DISABLED
               value: "false"
-            
+
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -1204,7 +1204,7 @@ spec:
               value: "false"
             - name: REDIS_CONNECTION_STRING
               value: "redis://default:$(REDIS_PASSWORD)@langfuse-redis-primary:6379/0"
-            
+
             - name: CLICKHOUSE_MIGRATION_URL
               value: "clickhouse://langfuse-clickhouse:9000"
             - name: CLICKHOUSE_MIGRATION_SSL
@@ -1218,12 +1218,12 @@ spec:
                 secretKeyRef:
                   name: langfuse-clickhouse-auth
                   key: password
-            
+
             - name: CLICKHOUSE_CLUSTER_ENABLED
               value: "false"
             - name: LANGFUSE_AUTO_CLICKHOUSE_MIGRATION_DISABLED
               value: "false"
-            
+
             - name: LANGFUSE_S3_EVENT_UPLOAD_BUCKET
               value: "langfuse"
             - name: LANGFUSE_S3_EVENT_UPLOAD_REGION
@@ -1378,7 +1378,7 @@ spec:
               value: "postgres_langfuse"
             - name: LANGFUSE_AUTO_POSTGRES_MIGRATION_DISABLED
               value: "false"
-            
+
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -1388,7 +1388,7 @@ spec:
               value: "false"
             - name: REDIS_CONNECTION_STRING
               value: "redis://default:$(REDIS_PASSWORD)@langfuse-redis-primary:6379/0"
-            
+
             - name: CLICKHOUSE_MIGRATION_URL
               value: "clickhouse://langfuse-clickhouse:9000"
             - name: CLICKHOUSE_MIGRATION_SSL
@@ -1402,12 +1402,12 @@ spec:
                 secretKeyRef:
                   name: langfuse-clickhouse-auth
                   key: password
-            
+
             - name: CLICKHOUSE_CLUSTER_ENABLED
               value: "false"
             - name: LANGFUSE_AUTO_CLICKHOUSE_MIGRATION_DISABLED
               value: "false"
-            
+
             - name: LANGFUSE_S3_EVENT_UPLOAD_BUCKET
               value: "langfuse"
             - name: LANGFUSE_S3_EVENT_UPLOAD_REGION
@@ -1510,11 +1510,11 @@ spec:
     spec:
       enableServiceLinks: true
       serviceAccountName: langfuse-zookeeper
-      
+
       automountServiceAccountToken: false
       affinity:
         podAffinity:
-          
+
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - podAffinityTerm:
@@ -1526,7 +1526,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
               weight: 1
         nodeAffinity:
-          
+
       securityContext:
         fsGroup: 1001
         fsGroupChangePolicy: Always
@@ -1591,7 +1591,7 @@ spec:
             - name: ZOO_MAX_SESSION_TIMEOUT
               value: "40000"
             - name: ZOO_SERVERS
-              value: langfuse-zookeeper-0.langfuse-zookeeper-headless.default.svc.cluster.local:2888:3888::1 langfuse-zookeeper-1.langfuse-zookeeper-headless.default.svc.cluster.local:2888:3888::2 langfuse-zookeeper-2.langfuse-zookeeper-headless.default.svc.cluster.local:2888:3888::3 
+              value: langfuse-zookeeper-0.langfuse-zookeeper-headless.default.svc.cluster.local:2888:3888::1 langfuse-zookeeper-1.langfuse-zookeeper-headless.default.svc.cluster.local:2888:3888::2 langfuse-zookeeper-2.langfuse-zookeeper-headless.default.svc.cluster.local:2888:3888::3
             - name: ZOO_ENABLE_AUTH
               value: "no"
             - name: ZOO_ENABLE_QUORUM_AUTH
@@ -1715,11 +1715,11 @@ spec:
         shard: "0"
     spec:
       serviceAccountName: langfuse-clickhouse
-      
+
       automountServiceAccountToken: false
       affinity:
         podAffinity:
-          
+
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - podAffinityTerm:
@@ -1731,7 +1731,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
               weight: 1
         nodeAffinity:
-          
+
       securityContext:
         fsGroup: 1001
         fsGroupChangePolicy: Always
@@ -1857,7 +1857,7 @@ spec:
         - name: config
           configMap:
             name: langfuse-clickhouse
-  volumeClaimTemplates:    
+  volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
@@ -1909,11 +1909,11 @@ spec:
         app.kubernetes.io/component: primary
     spec:
       serviceAccountName: langfuse-postgresql
-      
+
       automountServiceAccountToken: false
       affinity:
         podAffinity:
-          
+
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - podAffinityTerm:
@@ -1925,7 +1925,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
               weight: 1
         nodeAffinity:
-          
+
       securityContext:
         fsGroup: 1001
         fsGroupChangePolicy: Always
@@ -2092,7 +2092,7 @@ spec:
         checksum/scripts: 7a413afc2606007753c903c5b45cb419023d8be9ac534341770543056c956d3e
         checksum/secret: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
     spec:
-      
+
       securityContext:
         fsGroup: 1001
         fsGroupChangePolicy: Always
@@ -2102,7 +2102,7 @@ spec:
       automountServiceAccountToken: false
       affinity:
         podAffinity:
-          
+
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - podAffinityTerm:
@@ -2114,7 +2114,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
               weight: 1
         nodeAffinity:
-          
+
       enableServiceLinks: true
       terminationGracePeriodSeconds: 30
       containers:
