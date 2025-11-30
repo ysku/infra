@@ -1,28 +1,96 @@
+# Langfuse Helm values for GKE deployment
+# Optimized for e2-medium nodes (2 vCPU, 4GB memory)
+
 langfuse:
   salt:
     secretKeyRef:
       name: langfuse-general
       key: salt
+  encryptionKey:
+    secretKeyRef:
+      name: langfuse-general
+      key: encryption-key
   nextauth:
     secret:
       secretKeyRef:
         name: langfuse-nextauth-secret
         key: nextauth-secret
 
-postgresql:
-  auth:
-    # If you want to use `postgres` as the username, you need to provide a adminPasswordKey in secretKeys.
-    username: langfuse
-    existingSecret: langfuse-postgresql-auth
-    secretKeys:
-      userPasswordKey: password
-
 clickhouse:
+  # Reduce replicas to 1 for resource-constrained environments
+  replicaCount: 1
+  shards: 1
+
   auth:
     existingSecret: langfuse-clickhouse-auth
     existingSecretKey: password
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+      ephemeral-storage: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+      ephemeral-storage: 50Mi
+
+zookeeper:
+  # Reduce replicas to 1 for resource-constrained environments
+  replicaCount: 1
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+postgresql:
+  auth:
+    existingSecret: langfuse-postgresql-auth
+    secretKeys:
+      adminPasswordKey: password
+      userPasswordKey: password
+  primary:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
 
 redis:
   auth:
     existingSecret: langfuse-redis-auth
     existingSecretPasswordKey: password
+  master:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+# Langfuse web application
+web:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+# Langfuse worker
+worker:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
