@@ -295,6 +295,7 @@ resource "google_container_node_pool" "primary_nodes" {
     disk_size_gb    = var.gke_disk_size_gb
     disk_type       = "pd-standard"
     service_account = google_service_account.gke_nodes.email
+    spot            = var.gke_spot_enabled
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"

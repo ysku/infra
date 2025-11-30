@@ -1,5 +1,7 @@
 project_id = "ysku-dev"
 region     = "asia-northeast1"
 
-# GKE Node Pool Autoscaling
-gke_max_node_count = 10
+# GKE Node Pool Configuration
+gke_machine_type   = "e2-small"
+gke_max_node_count = 15
+gke_spot_enabled   = true

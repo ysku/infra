@@ -67,3 +67,9 @@ variable "gke_disk_size_gb" {
   default     = 50
 }
 
+variable "gke_spot_enabled" {
+  type        = bool
+  description = "Whether to use Spot VMs for GKE nodes (preemptible)"
+  default     = false
+}
+
