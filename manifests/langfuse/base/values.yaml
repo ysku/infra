@@ -1,0 +1,28 @@
+langfuse:
+  salt:
+    secretKeyRef:
+      name: langfuse-general
+      key: salt
+  nextauth:
+    secret:
+      secretKeyRef:
+        name: langfuse-nextauth-secret
+        key: nextauth-secret
+
+postgresql:
+  auth:
+    # If you want to use `postgres` as the username, you need to provide a adminPasswordKey in secretKeys.
+    username: langfuse
+    existingSecret: langfuse-postgresql-auth
+    secretKeys:
+      userPasswordKey: password
+
+clickhouse:
+  auth:
+    existingSecret: langfuse-clickhouse-auth
+    existingSecretKey: password
+
+redis:
+  auth:
+    existingSecret: langfuse-redis-auth
+    existingSecretPasswordKey: password

@@ -4,3 +4,10 @@
 # .tfstate files
 *.tfstate
 *.tfstate.*
+
+# Kubernetes secrets (if generated locally)
+**/secrets.yaml
+**/secret-*.yaml
+
+# Local values overrides
+**/values.local.yaml
