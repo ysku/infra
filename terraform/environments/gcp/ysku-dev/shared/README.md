@@ -45,27 +45,25 @@ ysku-dev プロジェクト内の複数のアプリケーションで共有す�
 
 ### GKE Cluster
 - **Cluster Name**: `shared-gke` (変更可能)
-- **Type**: Zonal (デフォルト) または Regional
-- **Zone**: `asia-northeast1-a` (zonal の場合)
-- **Region**: `asia-northeast1` (regional の場合)
+- **Mode**: Autopilot (fully managed by Google)
+- **Type**: Regional
+- **Region**: `asia-northeast1`
 - **Release Channel**: `REGULAR`
 - **Network**: VPC-native cluster (Alias IP 使用)
+
+#### Autopilot の特徴
+- ノードプールの管理が不要
+- Podのリソース要求に基づいて自動的に最適なノードを選択・作成
+- 使用したリソース分のみ課金
+- セキュリティのベストプラクティスが自動適用
+- Spot VMも自動的に活用
 
 #### Private Cluster 設定
 - **Private Nodes**: 有効（ノードにパブリック IP なし）
 - **Private Endpoint**: 無効（コントロールプレーンはパブリックアクセス可能）
 - **Master CIDR**: `172.16.0.0/28`
 
-#### Node Pool
-- **Machine Type**: `e2-medium` (デフォルト)
-- **Disk Size**: 50GB
-- **Disk Type**: `pd-standard`
-- **Initial Nodes**: 1
-- **Autoscaling**: 1-3 ノード
-- **Auto Repair**: 有効
-- **Auto Upgrade**: 有効
-
-#### 有効な機能
+#### 自動で有効化される機能
 - **Workload Identity**: 有効
 - **Network Policy**: 有効
 - **HTTP Load Balancing**: 有効
@@ -75,15 +73,6 @@ ysku-dev プロジェクト内の複数のアプリケーションで共有す�
 - **Filestore CSI Driver**: 有効
 - **Logging**: System Components + Workloads
 - **Monitoring**: System Components
-
-#### Service Account
-- **Email**: `gke-nodes@ysku-dev.iam.gserviceaccount.com`
-- **権限**:
-  - `roles/logging.logWriter`
-  - `roles/monitoring.metricWriter`
-  - `roles/monitoring.viewer`
-  - `roles/stackdriver.resourceMetadata.writer`
-  - `roles/artifactregistry.reader`
 
 ## デプロイ手順
 
@@ -130,9 +119,9 @@ terraform output gke_service_account
 ### GKE クラスターへの接続
 
 ```bash
-# gcloud で認証情報を取得
+# gcloud で認証情報を取得（Autopilot は regional）
 gcloud container clusters get-credentials shared-gke \
-  --zone=asia-northeast1-a \
+  --region=asia-northeast1 \
   --project=ysku-dev
 
 # kubectl で確認
@@ -147,16 +136,13 @@ kubectl get pods -A
 ```hcl
 # GKE クラスター設定
 gke_cluster_name    = "shared-gke"
-gke_regional        = false              # true で Regional クラスター
-gke_zone            = "asia-northeast1-a"
-gke_release_channel = "REGULAR"          # RAPID, REGULAR, STABLE
+gke_release_channel = "REGULAR"  # RAPID, REGULAR, STABLE
 
-# ノードプール設定
-gke_node_count     = 1
-gke_min_node_count = 1
-gke_max_node_count = 3
-gke_machine_type   = "e2-medium"
-gke_disk_size_gb   = 50
+# Note: Autopilot モードでは以下の設定は不要です
+# - gke_regional, gke_zone (常に regional)
+# - gke_node_count, gke_min_node_count, gke_max_node_count (自動管理)
+# - gke_machine_type, gke_disk_size_gb (自動選択)
+# - gke_spot_enabled (自動的に活用)
 ```
 
 ## 次のステップ

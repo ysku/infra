@@ -74,13 +74,11 @@ output "gke_cluster_location" {
   value       = google_container_cluster.shared_gke.location
 }
 
-output "gke_service_account" {
-  description = "The service account used by GKE nodes"
-  value       = google_service_account.gke_nodes.email
-}
-
 output "gke_workload_identity_pool" {
   description = "The Workload Identity pool for the GKE cluster"
   value       = "${var.project_id}.svc.id.goog"
 }
+
+# Note: Autopilot clusters do not have a user-managed service account
+# Google automatically manages service accounts for Autopilot nodes
 

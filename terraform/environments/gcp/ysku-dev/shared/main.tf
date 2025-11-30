@@ -132,50 +132,17 @@ resource "google_compute_firewall" "allow_health_checks" {
 # GKE Cluster
 # ============================================
 
-# Service Account for GKE nodes
-resource "google_service_account" "gke_nodes" {
-  project      = var.project_id
-  account_id   = "gke-nodes"
-  display_name = "GKE Nodes Service Account"
-  description  = "Service account used by GKE cluster nodes"
-}
+# Note: Autopilot mode does not require a separate service account
+# Google manages the service accounts automatically
 
-# Grant necessary permissions to the GKE nodes service account
-resource "google_project_iam_member" "gke_nodes_log_writer" {
-  project = var.project_id
-  role    = "roles/logging.logWriter"
-  member  = "serviceAccount:${google_service_account.gke_nodes.email}"
-}
-
-resource "google_project_iam_member" "gke_nodes_metric_writer" {
-  project = var.project_id
-  role    = "roles/monitoring.metricWriter"
-  member  = "serviceAccount:${google_service_account.gke_nodes.email}"
-}
-
-resource "google_project_iam_member" "gke_nodes_monitoring_viewer" {
-  project = var.project_id
-  role    = "roles/monitoring.viewer"
-  member  = "serviceAccount:${google_service_account.gke_nodes.email}"
-}
-
-resource "google_project_iam_member" "gke_nodes_resource_metadata_writer" {
-  project = var.project_id
-  role    = "roles/stackdriver.resourceMetadata.writer"
-  member  = "serviceAccount:${google_service_account.gke_nodes.email}"
-}
-
-resource "google_project_iam_member" "gke_nodes_artifact_registry_reader" {
-  project = var.project_id
-  role    = "roles/artifactregistry.reader"
-  member  = "serviceAccount:${google_service_account.gke_nodes.email}"
-}
-
-# GKE Cluster
+# GKE Autopilot Cluster
 resource "google_container_cluster" "shared_gke" {
   project  = var.project_id
   name     = var.gke_cluster_name
-  location = var.gke_regional ? var.region : var.gke_zone
+  location = var.region
+
+  # Enable Autopilot mode
+  enable_autopilot = true
 
   # VPC and Subnet configuration
   network    = google_compute_network.shared_vpc.self_link
@@ -185,21 +152,6 @@ resource "google_container_cluster" "shared_gke" {
   ip_allocation_policy {
     cluster_secondary_range_name  = "gke-pods"
     services_secondary_range_name = "gke-services"
-  }
-
-  # Remove default node pool
-  remove_default_node_pool = true
-  initial_node_count       = 1
-
-  # Network policy
-  network_policy {
-    enabled  = true
-    provider = "PROVIDER_UNSPECIFIED"
-  }
-
-  # Workload Identity
-  workload_identity_config {
-    workload_pool = "${var.project_id}.svc.id.goog"
   }
 
   # Private cluster configuration
@@ -217,25 +169,6 @@ resource "google_container_cluster" "shared_gke" {
     }
   }
 
-  # Addons configuration
-  addons_config {
-    http_load_balancing {
-      disabled = false
-    }
-    horizontal_pod_autoscaling {
-      disabled = false
-    }
-    network_policy_config {
-      disabled = false
-    }
-    gcp_filestore_csi_driver_config {
-      enabled = true
-    }
-    gcs_fuse_csi_driver_config {
-      enabled = true
-    }
-  }
-
   # Release channel
   release_channel {
     channel = var.gke_release_channel
@@ -248,94 +181,11 @@ resource "google_container_cluster" "shared_gke" {
     }
   }
 
-  # Logging and monitoring
-  logging_config {
-    enable_components = ["SYSTEM_COMPONENTS", "WORKLOADS"]
-  }
-
-  monitoring_config {
-    enable_components = ["SYSTEM_COMPONENTS"]
-    managed_prometheus {
-      enabled = true
-    }
-  }
-
-  # Security settings
-  binary_authorization {
-    evaluation_mode = "DISABLED"
-  }
-
-  # Enable Autopilot mode (optional)
-  # enable_autopilot = var.gke_autopilot
-
-  lifecycle {
-    ignore_changes = [
-      initial_node_count,
-    ]
-  }
-}
-
-# Node Pool
-resource "google_container_node_pool" "primary_nodes" {
-  project    = var.project_id
-  name       = "primary-node-pool"
-  location   = var.gke_regional ? var.region : var.gke_zone
-  cluster    = google_container_cluster.shared_gke.name
-  node_count = var.gke_node_count
-
-  # Autoscaling configuration
-  autoscaling {
-    min_node_count = var.gke_min_node_count
-    max_node_count = var.gke_max_node_count
-  }
-
-  # Node configuration
-  node_config {
-    machine_type    = var.gke_machine_type
-    disk_size_gb    = var.gke_disk_size_gb
-    disk_type       = "pd-standard"
-    service_account = google_service_account.gke_nodes.email
-    spot            = var.gke_spot_enabled
-
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform"
-    ]
-
-    # Workload Identity
-    workload_metadata_config {
-      mode = "GKE_METADATA"
-    }
-
-    # Enable GCR/Artifact Registry access
-    metadata = {
-      disable-legacy-endpoints = "true"
-    }
-
-    # Labels
-    labels = {
-      environment = "development"
-      managed-by  = "terraform"
-    }
-
-    # Tags
-    tags = ["gke-node", "shared-gke"]
-
-    # Shielded instance config
-    shielded_instance_config {
-      enable_secure_boot          = true
-      enable_integrity_monitoring = true
-    }
-  }
-
-  # Upgrade settings
-  upgrade_settings {
-    max_surge       = 1
-    max_unavailable = 0
-  }
-
-  # Management
-  management {
-    auto_repair  = true
-    auto_upgrade = true
-  }
+  # Note: Autopilot automatically manages:
+  # - Node pools and scaling
+  # - Logging and monitoring
+  # - Network policies
+  # - Workload Identity
+  # - Security settings
+  # - Addons (HTTP load balancing, HPA, etc.)
 }
