@@ -5,3 +5,6 @@ region     = "asia-northeast1"
 gke_machine_type   = "e2-small"
 gke_max_node_count = 15
 gke_spot_enabled   = true
+
+# DNS Configuration
+dns_domain = "dev.ysku.me."

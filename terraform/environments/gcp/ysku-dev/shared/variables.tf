@@ -73,3 +73,12 @@ variable "gke_spot_enabled" {
   default     = false
 }
 
+
+# ============================================
+# DNS Variables
+# ============================================
+
+variable "dns_domain" {
+  type        = string
+  description = "The DNS name of this managed zone, for instance \"example.com.\". Inherited from AWS Route53."
+}

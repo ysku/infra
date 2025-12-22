@@ -82,3 +82,8 @@ output "gke_workload_identity_pool" {
 # Note: Autopilot clusters do not have a user-managed service account
 # Google automatically manages service accounts for Autopilot nodes
 
+
+output "dns_name_servers" {
+  description = "The name servers of the Cloud DNS managed zone"
+  value       = google_dns_managed_zone.ysku_dev_zone.name_servers
+}
