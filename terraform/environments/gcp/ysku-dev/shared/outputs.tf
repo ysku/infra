@@ -87,3 +87,8 @@ output "dns_name_servers" {
   description = "The name servers of the Cloud DNS managed zone"
   value       = google_dns_managed_zone.ysku_dev_zone.name_servers
 }
+
+output "shared_lb_ip_address" {
+  description = "The global static IP address for the shared load balancer"
+  value       = google_compute_global_address.shared_lb_ip.address
+}

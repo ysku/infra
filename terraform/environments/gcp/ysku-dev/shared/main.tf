@@ -144,6 +144,19 @@ resource "google_container_cluster" "shared_gke" {
   # Enable Autopilot mode
   enable_autopilot = true
 
+  deletion_protection = false
+
+  # Explicit Workload Identity Config
+  workload_identity_config {
+    workload_pool = "${var.project_id}.svc.id.goog"
+  }
+
+  # Enable Secret Manager CSI Driver (Top-level block)
+  secret_manager_config {
+    enabled = true
+  }
+
+
   # VPC and Subnet configuration
   network    = google_compute_network.shared_vpc.self_link
   subnetwork = google_compute_subnetwork.gke_subnet.self_link
