@@ -46,3 +46,10 @@ resource "google_project_iam_member" "allies_secret_accessor" {
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${google_service_account.allies_sa.email}"
 }
+
+# Grant Vertex AI API Access
+resource "google_project_iam_member" "allies_vertex_ai_user" {
+  project = var.project_id
+  role    = "roles/aiplatform.user"
+  member  = "serviceAccount:${google_service_account.allies_sa.email}"
+}
