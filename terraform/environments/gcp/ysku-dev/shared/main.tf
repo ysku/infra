@@ -137,6 +137,7 @@ resource "google_compute_firewall" "allow_health_checks" {
 
 # GKE Autopilot Cluster
 resource "google_container_cluster" "shared_gke" {
+  provider = google-beta
   project  = var.project_id
   name     = var.gke_cluster_name
   location = var.region
@@ -153,6 +154,11 @@ resource "google_container_cluster" "shared_gke" {
 
   # Enable Secret Manager CSI Driver (Top-level block)
   secret_manager_config {
+    enabled = true
+  }
+
+  # Enable Secret Manager SecretSync (Top-level block)
+  secret_sync_config {
     enabled = true
   }
 
